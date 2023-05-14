@@ -6,6 +6,8 @@ from adasyn import Adasyn
 from testMethods import test_oversampling_method, test_implemented_adasyn, test_before_oversampling
 
 
+# Authors: Cezary Szczesny
+
 def print_results(method_name, accuracy_score, precision_score, f1_score, recall_score):
     print("----------------------")
     print("Test method: " + method_name)

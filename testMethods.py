@@ -4,6 +4,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.neighbors import KNeighborsClassifier
 
 
+# Authors: Cezary Szczesny
 def test_oversampling_method(X, y, oversampling_method_instance):
     accuracies = []
     precisions = []
@@ -32,6 +33,7 @@ def test_oversampling_method(X, y, oversampling_method_instance):
             recall_scores)
 
 
+# Authors: Cezary Szczesny
 def test_implemented_adasyn(X, y, oversampling_method_instance):
     accuracies = []
     precisions = []
@@ -60,6 +62,7 @@ def test_implemented_adasyn(X, y, oversampling_method_instance):
             recall_scores)
 
 
+# Authors: Cezary Szczesny
 def test_before_oversampling(X, y):
     accuracies = []
     precisions = []

@@ -5,6 +5,7 @@ from imblearn.over_sampling.base import BaseOverSampler
 from sklearn.neighbors import NearestNeighbors
 
 
+# Authors: Dominik Badora, Cezary Szczesny
 class Adasyn(BaseOverSampler):
 
     def __init__(self):
