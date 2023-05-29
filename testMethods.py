@@ -37,8 +37,7 @@ def test_oversampling_method(X, y, oversampling_method_instance):
         g_means_table.append(g_mean)
         mcc_table.append(mcc)
 
-        return numpy.average(accuracies), numpy.average(precisions), numpy.average(f1_scores), numpy.average(
-            recall_scores), numpy.average(g_means_table), numpy.average(mcc_table)
+    return accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table
 
 
 # Authors: Cezary Szczesny, Dominik Badora
@@ -73,8 +72,7 @@ def test_implemented_adasyn(X, y, oversampling_method_instance):
         g_means_table.append(g_mean)
         mcc_table.append(mcc)
 
-        return numpy.average(accuracies), numpy.average(precisions), numpy.average(f1_scores), numpy.average(
-            recall_scores), numpy.average(g_means_table), numpy.average(mcc_table)
+    return accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table
 
 
 # Authors: Cezary Szczesny, Dominik Badora
@@ -106,6 +104,4 @@ def test_before_oversampling(X, y):
         recall_scores.append(rec_score)
         g_means_table.append(g_mean)
         mcc_table.append(mcc)
-
-        return numpy.average(accuracies), numpy.average(precisions), numpy.average(f1_scores), numpy.average(
-            recall_scores), numpy.average(g_means_table), numpy.average(mcc_table)
+    return accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table
