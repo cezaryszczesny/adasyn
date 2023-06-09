@@ -56,15 +56,9 @@ def pair_test(all_scores_table):
                 t_student_matrix[i, j] = stat
                 p_matrix[i, j] = p_value
 
-                if np.mean(first_scores_table) > np.mean(second_scores_table):
-                    better_metrics_matrix[i, j] = 1
-                else:
-                    better_metrics_matrix[j, i] = 1
-
-                if p_value < alpha:
-                    statistics_matters_matrix[i, j] = 1
-                else:
-                    statistics_matters_matrix[i, j] = 0
+                better_metrics_matrix[i, j] = np.mean(first_scores_table) > np.mean(second_scores_table)
+                better_metrics_matrix[j, i] = np.mean(first_scores_table) <= np.mean(second_scores_table)
+                statistics_matters_matrix[i, j] = p_value < alpha
 
         advantage_matter_stat_matrix = better_metrics_matrix * statistics_matters_matrix
         print("\n Order of methods in columns")
