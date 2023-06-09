@@ -1,7 +1,7 @@
 import numpy as np
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import ADASYN, SMOTE, BorderlineSMOTE
-from scipy.stats import shapiro, stats
+from scipy.stats import shapiro, stats, ttest_rel
 from sklearn.datasets import make_classification
 
 from adasyn import Adasyn
@@ -21,52 +21,65 @@ def print_results(method_name, accuracies, precisions, f1_scores, recall_scores,
     print("MCC: " + "{:.3f}".format(np.mean(mcc_table)) + " " + "{:.3f}".format(np.std(mcc_table)))
 
 
-def make_statistics(accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table):
-    n_classifiers = 6
-    statistics_matters_matrix = np.zeros((n_classifiers, n_classifiers), dtype=bool)
+def print_single_result(metric_name, method_names, method_metrics_scores_table):
+    print("----------------------")
+    print(metric_name)
+    print("\n")
+    methods_amount = len(method_names)
 
-    metrics = [accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table]
-    p_value = [0.05]
-    # TODO: shapiro do kosza chyba, napisałem parowy niżej
-    for i in range(n_classifiers):
-        for j in range(n_classifiers):
-            if i != j:
-                metric = metrics[i]
-                stat, p_val = shapiro(metric)
-                if p_val < p_value:
-                    statistics_matters_matrix[i, j] = True
-    print(statistics_matters_matrix)
-
-    return statistics_matters_matrix
+    for i in range(methods_amount):
+        print(method_names[i] + " " + "{:.3f}".format(np.mean(method_metrics_scores_table[i, :])) + " ± " +
+              "{:.3f}".format(np.std(method_metrics_scores_table[i, :])))
 
 
-# TODO: podpiąć pod kod
-def pair_test(before_oversampling_scores, after_oversampling_scores):
-    t_stat, p_value = stats.ttest_rel(before_oversampling_scores, after_oversampling_scores)
-    bool_value = np.mean(before_oversampling_scores) > np.mean(after_oversampling_scores)
-    alpha = 0.5
-    significant_advantage = p_value < alpha
-    statistical_advantage = bool_value * significant_advantage
-    print('------------------------')
-    print('T STAT')
-    print('------------------------')
-    print(t_stat)
-    print('------------------------')
-    print('P VALUE')
-    print('------------------------')
-    print(p_value)
-    print('------------------------')
-    print('BOOL VALUE')
-    print('------------------------')
-    print(bool_value)
-    print('------------------------')
-    print('SIGNIFICANT')
-    print('------------------------')
-    print(significant_advantage)
-    print('------------------------')
-    print('STATISTICAL')
-    print('------------------------')
-    print(statistical_advantage)
+def pair_test(all_scores_table):
+    n_experiment_objects = len(all_scores_table)
+    n_metrics = 6
+    metrics_names = ["Accuracy statistics", "Precision statistics", "F1-score statistics", "Recall statistics",
+                     "G-mean statistics", "MCC statistics"]
+    method_names = ["Before Oversampling", "Implemented ADASYN", "Imported ADASYN", "SMOTE", "SMOTE-ENN",
+                    "BORDERLINE SMOTE"]
+    t_student_matrix = np.zeros((n_experiment_objects, n_experiment_objects))
+    p_matrix = np.zeros((n_experiment_objects, n_experiment_objects))
+    better_metrics_matrix = np.zeros((n_experiment_objects, n_experiment_objects), dtype=bool)
+    statistics_matters_matrix = np.zeros((n_experiment_objects, n_experiment_objects), dtype=bool)
+    alpha = 0.05
+
+    for z in range(n_metrics):
+        print_single_result(metrics_names[z], method_names, all_scores_table[z])
+        for i in range(n_experiment_objects):
+            for j in range(n_experiment_objects):
+                first_scores_table = all_scores_table[z, i, :]
+                second_scores_table = all_scores_table[z, j, :]
+                stat, p_value = ttest_rel(first_scores_table, second_scores_table)
+
+                t_student_matrix[i, j] = stat
+                p_matrix[i, j] = p_value
+
+                if np.mean(first_scores_table) > np.mean(second_scores_table):
+                    better_metrics_matrix[i, j] = 1
+                else:
+                    better_metrics_matrix[j, i] = 1
+
+                if p_value < alpha:
+                    statistics_matters_matrix[i, j] = 1
+                else:
+                    statistics_matters_matrix[i, j] = 0
+
+        advantage_matter_stat_matrix = better_metrics_matrix * statistics_matters_matrix
+        print("\n Order of methods in columns")
+        print(method_names)
+        print("\n T-student matrix")
+        print(t_student_matrix)
+        print("\n P matrix")
+        print(p_matrix)
+        print("\n Better matrix")
+        print(better_metrics_matrix)
+        print("\n Stat matter matrix")
+        print(statistics_matters_matrix)
+        print("\n Adv matter matrix")
+        print(advantage_matter_stat_matrix)
+        print("\n")
 
 
 def save_results(method_name, accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table):
@@ -82,45 +95,43 @@ def save_results(method_name, accuracies, precisions, f1_scores, recall_scores, 
 X, y = make_classification(n_samples=500, weights=[0.9])
 
 # Before oversampling
-scores = test_before_oversampling(X, y)
-# save_results("Before oversampling", *scores)
-print_results("Before oversampling", *scores)
-make_statistics(*scores)
+before_over_scores = np.array(test_before_oversampling(X, y))
+# save_results("Before oversampling", *before_over_scores)
+# print_results(*before_over_scores)
 
 # Oversampling with implemented Adasyn
 adasyn = Adasyn()
-scores = test_oversampling_method(X, y, adasyn)
-# save_results("Implemented Adasyn", *scores)
-print_results("Implemented Adasyn", *scores)
-make_statistics(*scores)
+impl_adasyn_scores = np.array(test_oversampling_method(X, y, adasyn))
+# save_results("Implemented Adasyn", *impl_adasyn_scores)
+# print_results(*impl_adasyn_scores)
 
 # Oversampling with imported Adasyn
 ADASYN = ADASYN()
-scores = test_oversampling_method(X, y, ADASYN)
-# save_results("Imported Adasyn", *scores)
-print_results("Imported Adasyn", *scores)
-make_statistics(*scores)
+imported_adasyn_scores = np.array(test_oversampling_method(X, y, ADASYN))
+# save_results("Imported Adasyn", *imported_adasyn_scores)
+# print_results(*imported_adasyn_scores)
 
 # Oversampling with SMOTE
 SMOTE = SMOTE()
-scores = test_oversampling_method(X, y, SMOTE)
-# save_results("SMOTE", *scores)
-print_results("SMOTE", *scores)
-make_statistics(*scores)
+smote_scores = np.array(test_oversampling_method(X, y, SMOTE))
+# save_results("SMOTE", *smote_scores)
+# print_results(*smote_scores)
 
 # Oversampling with SMOTE-ENN
 SMOTE_ENN = SMOTEENN()
-scores = test_oversampling_method(X, y, SMOTE_ENN)
-# save_results("SMOTE-ENN", *scores)
-print_results("SMOTE-ENN", *scores)
-make_statistics(*scores)
+smote_enn_scores = np.array(test_oversampling_method(X, y, SMOTE_ENN))
+# save_results("SMOTE-ENN", *smote_enn_scores)
+# print_results(*smote_enn_scores)
 
 # Oversampling with SMOTE-BORDERLINE
 BORDERLINE_SMOTE = BorderlineSMOTE()
-scores = test_oversampling_method(X, y, BORDERLINE_SMOTE)
-# save_results("SMOTE-BORDERLINE", *scores)
-print_results("SMOTE-BORDERLINE", *scores)
-make_statistics(*scores)
+borderline_smote_scores = np.array(test_oversampling_method(X, y, BORDERLINE_SMOTE))
+# save_results("SMOTE-BORDERLINE", *borderline_smote_scores)
+# print_results(*borderline_smote_scores)
+
+all_scores = np.array([before_over_scores, impl_adasyn_scores, imported_adasyn_scores, smote_scores, smote_enn_scores,
+                       borderline_smote_scores])
+pair_test(all_scores)
 
 print("----------------------")
 print("THE END")
