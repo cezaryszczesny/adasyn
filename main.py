@@ -1,7 +1,7 @@
 import numpy as np
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import ADASYN, SMOTE, BorderlineSMOTE
-from scipy.stats import shapiro
+from scipy.stats import shapiro, stats
 from sklearn.datasets import make_classification
 
 from adasyn import Adasyn
@@ -27,7 +27,7 @@ def make_statistics(accuracies, precisions, f1_scores, recall_scores, g_means_ta
 
     metrics = [accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table]
     p_value = [0.05]
-    # TODO: do poprawy na wektor zamiast macierz
+    # TODO: shapiro do kosza chyba, napisałem parowy niżej
     for i in range(n_classifiers):
         for j in range(n_classifiers):
             if i != j:
@@ -38,6 +38,35 @@ def make_statistics(accuracies, precisions, f1_scores, recall_scores, g_means_ta
     print(statistics_matters_matrix)
 
     return statistics_matters_matrix
+
+
+# TODO: podpiąć pod kod
+def pair_test(before_oversampling_scores, after_oversampling_scores):
+    t_stat, p_value = stats.ttest_rel(before_oversampling_scores, after_oversampling_scores)
+    bool_value = np.mean(before_oversampling_scores) > np.mean(after_oversampling_scores)
+    alpha = 0.5
+    significant_advantage = p_value < alpha
+    statistical_advantage = bool_value * significant_advantage
+    print('------------------------')
+    print('T STAT')
+    print('------------------------')
+    print(t_stat)
+    print('------------------------')
+    print('P VALUE')
+    print('------------------------')
+    print(p_value)
+    print('------------------------')
+    print('BOOL VALUE')
+    print('------------------------')
+    print(bool_value)
+    print('------------------------')
+    print('SIGNIFICANT')
+    print('------------------------')
+    print(significant_advantage)
+    print('------------------------')
+    print('STATISTICAL')
+    print('------------------------')
+    print(statistical_advantage)
 
 
 def save_results(method_name, accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table):
