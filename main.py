@@ -1,11 +1,11 @@
 import numpy as np
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import ADASYN, SMOTE, BorderlineSMOTE
-from sklearn.datasets import make_classification
 from scipy.stats import shapiro
+from sklearn.datasets import make_classification
 
 from adasyn import Adasyn
-from testMethods import test_oversampling_method, test_implemented_adasyn, test_before_oversampling
+from testMethods import test_oversampling_method, test_before_oversampling
 
 
 # Authors: Cezary Szczesny, Dominik Badora
@@ -60,7 +60,7 @@ make_statistics(*scores)
 
 # Oversampling with implemented Adasyn
 adasyn = Adasyn()
-scores = test_implemented_adasyn(X, y, adasyn)
+scores = test_oversampling_method(X, y, adasyn)
 # save_results("Implemented Adasyn", *scores)
 print_results("Implemented Adasyn", *scores)
 make_statistics(*scores)

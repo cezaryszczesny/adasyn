@@ -8,10 +8,12 @@ from sklearn.neighbors import NearestNeighbors
 # Authors: Dominik Badora, Cezary Szczesny
 class Adasyn(BaseOverSampler):
 
-    def __init__(self):
-        pass
+    def __init__(self, sampling_strategy="auto", n_neighbors=5, ratio=0.9):
+        super().__init__(sampling_strategy=sampling_strategy)
+        self.n_neighbors = n_neighbors
+        self.ratio = ratio
 
-    def _fit_resample(self, X, y, n_neighbors=5, ratio=0.9):
+    def _fit_resample(self, X, y):
         examplesInEachClass = Counter(y)
         maxNumberOfSample = max(examplesInEachClass.values())
         syntheticExampleList = []
@@ -19,12 +21,12 @@ class Adasyn(BaseOverSampler):
         for classIdx in examplesInEachClass.keys():
             sampleIndexes = np.where(y == classIdx)[0]
             currentClassSamples = X[sampleIndexes]
-            syntheticSamplesToGenerateInClass = int(ratio * (maxNumberOfSample - examplesInEachClass[classIdx]))
+            syntheticSamplesToGenerateInClass = int(self.ratio * (maxNumberOfSample - examplesInEachClass[classIdx]))
 
             if syntheticSamplesToGenerateInClass == 0:
                 continue
 
-            knn = NearestNeighbors(n_neighbors=n_neighbors).fit(currentClassSamples)
+            knn = NearestNeighbors(n_neighbors=self.n_neighbors).fit(currentClassSamples)
             knnOfExample = knn.kneighbors(currentClassSamples, return_distance=False)
 
             for classSample in range(syntheticSamplesToGenerateInClass):
