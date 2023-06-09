@@ -26,12 +26,12 @@ def make_statistics(accuracies, precisions, f1_scores, recall_scores, g_means_ta
     statistics_matters_matrix = np.zeros((n_classifiers, n_classifiers), dtype=bool)
 
     metrics = [accuracies, precisions, f1_scores, recall_scores, g_means_table, mcc_table]
-    p_values = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+    p_value = [0.05]
+    # TODO: do poprawy na wektor zamiast macierz
     for i in range(n_classifiers):
         for j in range(n_classifiers):
             if i != j:
                 metric = metrics[i]
-                p_value = p_values[i]
                 stat, p_val = shapiro(metric)
                 if p_val < p_value:
                     statistics_matters_matrix[i, j] = True
