@@ -1,10 +1,10 @@
 import numpy as np
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN
-from implemented_adasyn import Adasyn
 from scipy.stats import ttest_rel
 from sklearn.datasets import make_classification
 
+from adasyn import Adasyn
 from testMethods import test_oversampling_method, test_before_oversampling
 
 
