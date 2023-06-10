@@ -1,16 +1,17 @@
 import numpy as np
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN
-from sklearn.datasets import make_classification
 
 from adasyn import Adasyn
+from dataUtil import get_real_data
 from testMethods import test_oversampling_method, test_before_oversampling, pair_test
 
 # Authors: Cezary Szczesny, Dominik Badora
-
-
 # Generate samples
-X, y = make_classification(n_samples=500, weights=[0.9])
+# X, y = make_classification(n_samples=500, weights=[0.9])
+
+# Real data samples - red wine
+X, y = get_real_data()
 
 # Before oversampling
 before_over_scores = np.array(test_before_oversampling(X, y))
@@ -49,6 +50,7 @@ borderline_smote_scores = np.array(test_oversampling_method(X, y, borderline_smo
 
 all_scores = np.array([before_over_scores, impl_adasyn_scores, imported_adasyn_scores, smote_scores, smote_enn_scores,
                        borderline_smote_scores])
+
 pair_test(all_scores)
 
 print("----------------------")
