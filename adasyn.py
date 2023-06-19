@@ -8,7 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 # Authors: Dominik Badora, Cezary Szczesny
 class Adasyn(BaseOverSampler):
 
-    def __init__(self, sampling_strategy="auto", n_neighbors=5, ratio=0.9):
+    def __init__(self, sampling_strategy="auto", n_neighbors=5, ratio=1.0):
         super().__init__(sampling_strategy=sampling_strategy)
         self.n_neighbors = n_neighbors
         self.ratio = ratio
