@@ -4,7 +4,7 @@ from scipy.stats import ttest_rel
 from sklearn.metrics import accuracy_score, precision_score, f1_score, recall_score, matthews_corrcoef
 from sklearn.model_selection import StratifiedKFold
 from sklearn.neighbors import KNeighborsClassifier
-
+from tabulate import tabulate
 from printUtil import print_single_result
 
 
@@ -107,9 +107,9 @@ def pair_test(all_scores_table):
         print("\n Order of methods in columns")
         print(method_names)
         print("\n T-student matrix")
-        print(t_student_matrix)
+        print(tabulate(t_student_matrix))
         print("\n P matrix")
-        print(p_matrix)
+        print(tabulate(p_matrix))
         print("\n Better matrix")
         print(better_metrics_matrix)
         print("\n Stat matter matrix")
